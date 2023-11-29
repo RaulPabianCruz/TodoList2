@@ -2,6 +2,7 @@ import "./style.css";
 import { todoFactory } from './TodoFactory.js';
 import { projectFactory } from './ProjectFactory.js';
 import { makeHeader } from './header.js';
+import { makeSidebar } from './sidebar.js';
 
 const projectManager = (function (){
     const defaultProject = projectFactory('Default');
@@ -66,7 +67,8 @@ const projectManager = (function (){
             addTodo, deleteTodo, getTodoAt, getProjectTodoList };
 })();
 
-//might not be needed, not too sure yet
+//      might not be needed, not too sure yet
+/*
 const logicModule = (function() {
     let selectedProjectIndex = 0;
 
@@ -84,6 +86,13 @@ const logicModule = (function() {
 
     return { setSelectedProjectIndex, getSelectedProjectIndex};
 })();
+*/
+
+
 
 const container = document.querySelector('#content');
 container.appendChild(makeHeader());
+
+const projArray = projectManager.getProjectList();
+const titleArray = projArray.map((project)=>project.getTitle());
+container.appendChild(makeSidebar(titleArray));
