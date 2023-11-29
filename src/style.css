@@ -50,3 +50,18 @@ body {
     grid-template-columns: 225px 1fr;
     grid-template-rows: 125px 1fr;
 }
+
+/* Header Styling yay!  */
+
+.header {
+    background-color: var(--sandBlue);
+    grid-column: 1/3;
+    grid-row: 1;
+}
+
+.header-text {
+    font-size: 3.5rem;
+    font-weight: bold;
+    font-style: italic;
+    color: white;
+}

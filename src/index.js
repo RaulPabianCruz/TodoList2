@@ -1,6 +1,7 @@
 import "./style.css";
 import { todoFactory } from './TodoFactory.js';
 import { projectFactory } from './ProjectFactory.js';
+import { makeHeader } from './header.js';
 
 const projectManager = (function (){
     const defaultProject = projectFactory('Default');
@@ -84,3 +85,5 @@ const logicModule = (function() {
     return { setSelectedProjectIndex, getSelectedProjectIndex};
 })();
 
+const container = document.querySelector('#content');
+container.appendChild(makeHeader());
