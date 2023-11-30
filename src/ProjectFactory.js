@@ -29,11 +29,11 @@ const projectFactory = function(title) {
         else
             return null;
     }
-    const getTodoList = function() {
+    const getTodoArray = function() {
         return todoArray.map((todo) => todo);
     }
 
-    return { getTitle, setTitle, addTodo, deleteTodo, getTodoAt, getTodoList };
+    return { getTitle, setTitle, addTodo, deleteTodo, getTodoAt, getTodoArray };
 }
 
 export { projectFactory };

@@ -107,3 +107,48 @@ body {
     border: 1px solid gray;
     border-radius: 5px;
 }
+
+/* Project View Styling yay! */
+
+.project-view-container {
+    background-color: var(--lightGray);
+    display: grid;
+    grid-template-rows: 75px 1fr 75px;
+    align-items: center;
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.project-view-title {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    text-align: center;
+    grid-row: 1;
+}
+
+.project-list-container {
+    grid-row: 2;
+}
+
+.project-list-item {
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 15px;
+    box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.4);
+}
+
+.item-due-date {
+    font-style: italic;
+}
+
+.project-view-options {
+    display: flex;
+    justify-content: center;
+    grid-row: 3;
+}
+
+.project-view-bttn {
+    padding: 10px;
+    border: 1px solid gray;
+    border-radius: 5px;
+}

@@ -1,8 +1,10 @@
 import "./style.css";
 import { todoFactory } from './TodoFactory.js';
 import { projectFactory } from './ProjectFactory.js';
+import { projectInfoFactory } from "./projectInfoFactory.js";
 import { makeHeader } from './header.js';
 import { makeSidebar } from './sidebar.js';
+import { makeProjectView } from "./projectView.js";
 
 const projectManager = (function (){
     const defaultProject = projectFactory('Default');
@@ -38,7 +40,7 @@ const projectManager = (function (){
         else
             return null;
     }
-    const getProjectList = function() {
+    const getProjectArray = function() {
         return projectArray.map((project) => project);
     }
 
@@ -56,15 +58,15 @@ const projectManager = (function (){
         else
             return null;
     }
-    const getProjectTodoList = function(projectIndex) {
+    const getProjectTodoArray = function(projectIndex) {
         if(_isValidIndex(projectIndex))
-            return projectArray[projectIndex].getTodoList();
+            return projectArray[projectIndex].getTodoArray();
         else
             null;
     }
 
-    return { addProject, deleteProject, editProject, getProjectAt, getProjectList,
-            addTodo, deleteTodo, getTodoAt, getProjectTodoList };
+    return { addProject, deleteProject, editProject, getProjectAt, getProjectArray,
+            addTodo, deleteTodo, getTodoAt, getProjectTodoArray };
 })();
 
 //      might not be needed, not too sure yet
@@ -93,6 +95,13 @@ const logicModule = (function() {
 const container = document.querySelector('#content');
 container.appendChild(makeHeader());
 
-const projArray = projectManager.getProjectList();
+const projArray = projectManager.getProjectArray();
 const titleArray = projArray.map((project)=>project.getTitle());
 container.appendChild(makeSidebar(titleArray));
+
+const dummyTodo = todoFactory('dummyTodo', 'this is dummy todo', '10/10/2024', 'low-priority', 'no notes');
+projectManager.addTodo(0,dummyTodo);
+
+const projInfo = projectInfoFactory(projectManager.getProjectAt(0));
+container.appendChild(makeProjectView(projInfo));
+
