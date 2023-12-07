@@ -59,8 +59,8 @@ const makeOptions = function() {
     container.classList.add('project-view-options');
 
     const bttn = document.createElement('button');
-    bttn.textContent = 'Add Task';
-    bttn.classList.add('add-tast-bttn');
+    bttn.textContent = 'Add Todo';
+    bttn.classList.add('add-todo-bttn');
     bttn.classList.add('project-view-bttn');
 
     container.appendChild(bttn);

@@ -24,9 +24,10 @@ time, mark, audio, video {
     --fontstack: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     --sandBlue: #0e7490;
     --lightBlue: #06b6d4;
-    --darkerLightBlue: #0891b2;
+    --darkerLightBlue: #083344;
     --lightGray: #e2e8f0;
     --shadedWhite: #f8fafc;
+    --neutralWhite: #fafafa;
 }
 
 @font-face {
@@ -93,6 +94,7 @@ body {
 
 .sidebar-list-item:hover {
     background-color: var(--darkerLightBlue);
+    color: var(--neutralWhite);
 }
 
 .sidebar-options {
@@ -140,6 +142,10 @@ body {
     border: 1px solid black;
     border-radius: 15px;
     box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.4);
+}
+
+.project-list-item:hover {
+    background-color: white;
 }
 
 .item-due-date {
