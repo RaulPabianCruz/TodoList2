@@ -7,20 +7,48 @@ const makeTodoView = function(projectTitles) {
     return dialog;
 }
 
-const updateProjectDest = function(projectTitles) {
-    let projectDest = document.querySelector('#project-dest');
-    projectDest.replaceChildren();
-
-    return _addProjectDestOptions(projectDest, projectTitles);
-}
-
-const updateTodoInfo = function(todoInfo, projectTitles) {
+const updateTodoInfo = function(todoInfo) {
     _updateTitleText(todoInfo.getTodoTitle());
     _updateDescText(todoInfo.getTodoDesc());
     _updateDueDateText(todoInfo.getTodoDueDate());
     _updatePriorityText(todoInfo.getTodoPriority());
-    _updateProjectDestText(todoInfo.getTodoLocation(), projectTitles);
+    _updateProjectDestText(todoInfo.getTodoLocation());
     _updateNotesText(todoInfo.getTodoNotes());
+}
+
+const getTitleValue = function() {
+    const titleElem = document.querySelector('#todo-title');
+    return titleElem.value;
+}
+
+const getDescValue = function() {
+    const descElem = document.querySelector('#todo-description');
+    return descElem.value;
+}
+
+const getDueDateValue = function() {
+    const dueDateElem = document.querySelector('#todo-due-date');
+    const dates = dueDateElem.value.split('-');
+    if(dates[1].charAt(0) == '0')
+        dates[1] = dates[1].slice(1);
+    if(dates[2].charAt(0) == '0')
+        dates[2] = dates[2].slice(1);
+    return new Date(dates[0], dates[1], dates[2]);
+}
+
+const getPriorityValue = function() {
+    const priorityElem = document.querySelector('#todo-priority');
+    return priorityElem.value;
+}
+
+const getProjectDestValue = function() {
+    const projectDestElem = document.querySelector('#project-dest');
+    return projectDestElem.value;
+}
+
+const getNotesValue = function() {
+    const notesElem = document.querySelector('#todo-notes');
+    return notesElem.value;
 }
 
 const _makeForm = function(projectTitles) {
@@ -244,8 +272,8 @@ const _updatePriorityText = function(todoPriority) {
     }
 }
 
-const _updateProjectDestText = function(projectLocation, projectTitles) {
-    const projectDest = updateProjectDest(projectTitles);
+const _updateProjectDestText = function(projectLocation) {
+    const projectDest = document.querySelector('#project-dest');
     const projOptions = projectDest.children;
     for(let i = 0; i < projOptions.length; i++){
         if(projOptions[i].textContent == projectLocation)
@@ -258,4 +286,5 @@ const _updateNotesText = function(todoNotes) {
     notes.setAttribute('value', todoNotes);
 }
 
-export { makeTodoView, updateProjectDest, updateTodoInfo }
+export { makeTodoView, updateTodoInfo, getTitleValue, getDescValue, getDueDateValue,
+        getPriorityValue, getProjectDestValue, getNotesValue }
