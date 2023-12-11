@@ -16,6 +16,8 @@ const updateTodoInfo = function(todoInfo) {
     _updateNotesText(todoInfo.getTodoNotes());
 }
 
+//need input validation in these functions or at least in dueDate
+
 const getTitleValue = function() {
     const titleElem = document.querySelector('#todo-title');
     return titleElem.value;
@@ -28,12 +30,15 @@ const getDescValue = function() {
 
 const getDueDateValue = function() {
     const dueDateElem = document.querySelector('#todo-due-date');
-    const dates = dueDateElem.value.split('-');
-    if(dates[1].charAt(0) == '0')
-        dates[1] = dates[1].slice(1);
-    if(dates[2].charAt(0) == '0')
-        dates[2] = dates[2].slice(1);
-    return new Date(dates[0], dates[1], dates[2]);
+    if(dueDateElem.value !== ''){
+        const dates = dueDateElem.value.split('-');
+        if(dates[1].charAt(0) == '0')
+            dates[1] = dates[1].slice(1);
+        if(dates[2].charAt(0) == '0')
+            dates[2] = dates[2].slice(1);
+        return new Date(dates[0], dates[1], dates[2]);
+    }
+    return dueDateElem.value;
 }
 
 const getPriorityValue = function() {
@@ -80,6 +85,7 @@ const _makeTitle = function() {
     const input = document.createElement('input');
     input.classList.add('form-control-text-input');
     input.type = 'text';
+    input.required = true;
     input.id = 'todo-title';
 
     container.appendChild(label);
@@ -101,6 +107,7 @@ const _makeDesc = function() {
     const input = document.createElement('input');
     input.classList.add('form-control-text-input');
     input.type = 'text';
+    input.required = true;
     input.id = 'todo-description';
 
     container.appendChild(label);
@@ -122,6 +129,7 @@ const _makeDueDate = function() {
     const input = document.createElement('input');
     input.classList.add('form-control-date-input');
     input.type = 'date';
+    input.required = true;
     input.id = 'todo-due-date';
 
     container.appendChild(label);
@@ -142,6 +150,7 @@ const _makePriority = function() {
 
     const select = document.createElement('select');
     select.classList.add('form-control-select');
+    select.required = true;
     select.id = 'todo-priority';
 
     const option1 = document.createElement('option');
@@ -174,6 +183,7 @@ const _makeProjectDest = function(projectTitles) {
     let select = document.createElement('select');
     select = _addProjectDestOptions(select, projectTitles);
     select.classList.add('form-control-select');
+    select.required = true;
     select.id = 'project-dest';
 
     container.appendChild(label);
@@ -208,6 +218,7 @@ const _makeNotes = function() {
     const input = document.createElement('input');
     input.classList.add('form-control-text-input');
     input.type = 'text';
+    input.required = true;
     input.id = 'todo-notes';
 
     container.appendChild(label);

@@ -133,11 +133,15 @@ const logicModule = (function() {
 
         return todoInfoFactory(todo, projectTitle);
     }
+    const deleteSelectedTodo = function() {
+        projectManager.deleteTodo(getSelectedProjectIndex, getSelectedTodoIndex);
+    }
 
     return { setSelectedProjectIndex, getSelectedProjectIndex, 
         setSelectedTodoIndex, getSelectedTodoIndex, setEditingTodo,
         setAddingTodo, isEditingTodo, isAddingTodo, getProjectTitles, 
-        getSelectedProjInfo , getProjInfoAt, getTodoInfoAt };
+        getSelectedProjInfo , getProjInfoAt, getTodoInfoAt,
+        deleteSelectedTodo };
 })();
 
 
@@ -247,33 +251,26 @@ const displayController = (function() {
     }
 
     const _submitTodoHandler = function() {
-        const title = todoView.getTitleValue();
-        const desc = todoView.getDescValue();
-        const dueDate = todoView.getDueDateValue();
-        const priority = todoView.getPriorityValue();
-        const notes = todoView.getNotesValue();
-        const newTodo = todoFactory(title, desc, dueDate, priority, notes);
+        if(_isFormInfoValid()){
+            const newTodo = _getDialogFormTodo();
+            const newProjectIndex = todoView.getProjectDestValue();
 
-        const newProjectIndex = todoView.getProjectDestValue();
+            if(logicModule.isAddingTodo()){
+                projectManager.addTodo(newProjectIndex, newTodo);
 
-        if(logicModule.isAddingTodo()){
-            projectManager.addTodo(newProjectIndex, newTodo);
+                logicModule.setAddingTodo(false);
+            }
+            else if(logicModule.isEditingTodo()){
+                logicModule.deleteSelectedTodo();
 
-            logicModule.setAddingTodo(false);
+                projectManager.addTodo(newProjectIndex, newTodo);
+                
+                logicModule.setEditingTodo(false);
+            }
+
+            _updateProjectView();
+            _cancelTodoHandler();
         }
-        else if(logicModule.isEditingTodo()){
-            //need to set up todo index tracker in logic module
-            const todoIndex = logicModule.getSelectedTodoIndex();
-            const currentProjectIndex = logicModule.getSelectedProjectIndex();
-            projectManager.deleteTodo(currentProjectIndex, todoIndex);
-
-            projectManager.addTodo(newProjectIndex, newTodo);
-            
-            logicModule.setEditingTodo(false);
-        }
-
-        _updateProjectView();
-        _cancelTodoHandler();
     }
 
     const _cancelTodoHandler = function() {
@@ -281,14 +278,22 @@ const displayController = (function() {
         container.removeChild(dialog);
     }
 
-    const _getFormInfo = function() {
+    const _getDialogFormTodo = function() {
         const title = todoView.getTitleValue();
         const desc = todoView.getDescValue();
         const dueDate = todoView.getDueDateValue();
         const priority = todoView.getPriorityValue();
         const notes = todoView.getNotesValue();
-        
+
         return todoFactory(title, desc, dueDate, priority, notes);
+    }
+
+    const _isFormInfoValid = function() {
+        if(todoView.getTitleValue() === '' || todoView.getDescValue() === '' ||
+            todoView.getDueDateValue() === '' || todoView.getNotesValue() === '')
+            return false;
+        else
+            return true;
     }
 
     return { initiatePage };
