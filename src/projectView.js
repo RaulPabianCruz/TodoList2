@@ -41,7 +41,7 @@ const makeProjectList = function(titles, priorities, dueDates) {
         listItem.setAttribute('data-index', i);
 
         const itemDueDate = document.createElement('p');
-        itemDueDate.textContent = 'Due Date: ' + dueDates[i];
+        itemDueDate.textContent = 'Due Date: ' + dueDates[i].toString();
         itemDueDate.classList.add('item-due-date');
         listItem.appendChild(itemDueDate);
 

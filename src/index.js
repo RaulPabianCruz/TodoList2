@@ -134,7 +134,7 @@ const logicModule = (function() {
         return todoInfoFactory(todo, projectTitle);
     }
     const deleteSelectedTodo = function() {
-        projectManager.deleteTodo(getSelectedProjectIndex, getSelectedTodoIndex);
+        projectManager.deleteTodo(selectedProjectIndex, selectedTodoIndex);
     }
 
     return { setSelectedProjectIndex, getSelectedProjectIndex, 

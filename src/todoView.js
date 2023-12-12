@@ -36,6 +36,9 @@ const getDueDateValue = function() {
             dates[1] = dates[1].slice(1);
         if(dates[2].charAt(0) == '0')
             dates[2] = dates[2].slice(1);
+        
+        //months are numbered (0-11) so I need to offset the input by 1
+        dates[1] = Number(dates[1]) - 1;
         return new Date(dates[0], dates[1], dates[2]);
     }
     return dueDateElem.value;
@@ -260,6 +263,7 @@ const _updateDescText = function(todoDesc) {
     desc.setAttribute('value', todoDesc);
 }
 
+//this function cant display the date given for some reason
 const _updateDueDateText = function(todoDate) {
     const dueDate = document.querySelector('#todo-due-date');
 
