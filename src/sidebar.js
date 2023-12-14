@@ -27,7 +27,6 @@ const makeSidebarList = function(projectTitles) {
 
         const listItem = document.createElement('li');
         listItem.textContent = projectTitles[i];
-
         listItem.classList.add('sidebar-list-item');
         listItem.setAttribute('data-index', i);
 

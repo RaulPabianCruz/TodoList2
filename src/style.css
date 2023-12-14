@@ -90,6 +90,7 @@ body {
 .list-item-container {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 .sidebar-list-item {
@@ -103,13 +104,26 @@ body {
 }
 
 .sidebar-list-bttn-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
     flex: 0 0 auto;
+}
+
+.sidebar-list-delete {
+    background-image: url('./icons/delete.svg');
+}
+
+.sidebar-list-edit {
+    background-image: url('./icons/tag-edit.svg');
 }
 
 .sidebar-list-bttn {
     height: 25px;
     width: 25px;
     margin-left: 3px;
+    border-radius: 5px;
+    border: 1px solid black;
 }
 
 .sidebar-options {

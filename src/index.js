@@ -184,7 +184,7 @@ const displayController = (function() {
         const displayedProjects = document.querySelectorAll('.sidebar-list-item');
         displayedProjects.forEach((project)=>project.addEventListener('click', _selectProjectHandler));
 
-        const editProjectBttn = document.querySelectorAll('sidebar-list-edit');
+        const editProjectBttn = document.querySelectorAll('.sidebar-list-edit');
         editProjectBttn.forEach((bttn)=>bttn.addEventListener('click', _editProjectHandler));
         
         const deleteProjectBttns = document.querySelectorAll('.sidebar-list-delete');
@@ -230,7 +230,14 @@ const displayController = (function() {
         const index = Number(bttnContainer.getAttribute('data-index'));
 
         const newTitle = prompt('Enter the project\'s new name: ');
-        
+        if(newTitle != null){
+            let project = projectManager.getProjectAt(index);
+            project.setTitle(newTitle);
+            _updateSidebar();
+
+            if(index == logicModule.getSelectedProjectIndex())
+                _updateProjectView();
+        }
     }
 
     const _deleteProjectHandler = function(event) {
