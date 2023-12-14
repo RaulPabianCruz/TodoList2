@@ -87,6 +87,11 @@ body {
     margin: 10px auto;
 }
 
+.list-item-container {
+    display: flex;
+    flex-direction: row;
+}
+
 .sidebar-list-item {
     font-size: 1.2rem;
     list-style: none;
@@ -95,6 +100,16 @@ body {
 .sidebar-list-item:hover {
     background-color: var(--darkerLightBlue);
     color: var(--neutralWhite);
+}
+
+.sidebar-list-bttn-container {
+    flex: 0 0 auto;
+}
+
+.sidebar-list-bttn {
+    height: 25px;
+    width: 25px;
+    margin-left: 3px;
 }
 
 .sidebar-options {

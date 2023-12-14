@@ -22,17 +22,43 @@ const makeSidebarList = function(projectTitles) {
     list.classList.add('sidebar-list');
 
     for(let i = 0; i < projectTitles.length; i++){
+        const container = document.createElement('div');
+        container.classList.add('list-item-container');
+
         const listItem = document.createElement('li');
         listItem.textContent = projectTitles[i];
 
         listItem.classList.add('sidebar-list-item');
         listItem.setAttribute('data-index', i);
 
-        list.appendChild(listItem);
+        container.appendChild(listItem);
+        if(i > 0)
+            container.appendChild(makeProjectButtons(i));
+        
+        list.appendChild(container);
     }
 
     return list;
 }
+
+const makeProjectButtons = function(index) {
+    const container = document.createElement('div');
+    container.classList.add('sidebar-list-bttn-container');
+    container.setAttribute('data-index', index);
+
+    const editBttn = document.createElement('button');
+    editBttn.classList.add('sidebar-list-bttn');
+    editBttn.classList.add('sidebar-list-edit');
+
+    const delBttn = document.createElement('button');
+    delBttn.classList.add('sidebar-list-bttn');
+    delBttn.classList.add('sidebar-list-delete');
+
+    container.appendChild(editBttn);
+    container.appendChild(delBttn);
+
+    return container;
+}   
 
 const makeSidebarOptions = function() {
     const container = document.createElement('div');

@@ -184,8 +184,11 @@ const displayController = (function() {
         const displayedProjects = document.querySelectorAll('.sidebar-list-item');
         displayedProjects.forEach((project)=>project.addEventListener('click', _selectProjectHandler));
 
-        //const editProjectBttn;
-        //const deleteProjectBttn;
+        const editProjectBttn = document.querySelectorAll('sidebar-list-edit');
+        editProjectBttn.forEach((bttn)=>bttn.addEventListener('click', _editProjectHandler));
+        
+        const deleteProjectBttns = document.querySelectorAll('.sidebar-list-delete');
+        deleteProjectBttns.forEach((bttn) => bttn.addEventListener('click', _deleteProjectHandler));
         
         const newProjectBttn = document.querySelector('.new-project-bttn');
         newProjectBttn.addEventListener('click', _newProjectHandler);
@@ -200,6 +203,8 @@ const displayController = (function() {
 
         const addTodoBttn = document.querySelector('.add-todo-bttn');
         addTodoBttn.addEventListener('click', _addTodoHandler);
+
+        //const deleteTodoBttn;
     }
 
     const _addTodoViewListeners = function() {
@@ -218,6 +223,30 @@ const displayController = (function() {
         logicModule.setSelectedProjectIndex(projectIndex);
 
         _updateProjectView();
+    }
+
+    const _editProjectHandler = function(event) {
+        const bttnContainer = event.currentTarget.parentElement;
+        const index = Number(bttnContainer.getAttribute('data-index'));
+
+        const newTitle = prompt('Enter the project\'s new name: ');
+        
+    }
+
+    const _deleteProjectHandler = function(event) {
+        const bttnContainer = event.currentTarget.parentElement;
+        const index = Number(bttnContainer.getAttribute('data-index'));
+
+        if(confirm('Are you sure you want to delete this project?')){
+            projectManager.deleteProject(index);
+            _updateSidebar();
+
+            const currentIndex = logicModule.getSelectedProjectIndex();
+            if(index <= currentIndex){
+                logicModule.setSelectedProjectIndex(currentIndex - 1);
+                _updateProjectView();
+            }
+        }
     }
 
     const _newProjectHandler = function(event) {
