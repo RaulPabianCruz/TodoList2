@@ -198,13 +198,14 @@ const displayController = (function() {
     }
 
     const _addProjectViewListeners = function() {
-        const todoArray = document.querySelectorAll('.project-list-item');
+        const todoArray = document.querySelectorAll('.todo-info-container');
         todoArray.forEach((todo)=>todo.addEventListener('click', _selectTodoHandler));
+
+        const deleteBttns = document.querySelectorAll('.todo-item-delete');
+        deleteBttns.forEach((bttn)=>bttn.addEventListener('click', _deleteTodoHandler));
 
         const addTodoBttn = document.querySelector('.add-todo-bttn');
         addTodoBttn.addEventListener('click', _addTodoHandler);
-
-        //const deleteTodoBttn;
     }
 
     const _addTodoViewListeners = function() {
@@ -312,6 +313,18 @@ const displayController = (function() {
     const _cancelTodoHandler = function() {
         dialog.close();
         container.removeChild(dialog);
+    }
+
+    const _deleteTodoHandler = function(event) {
+        const bttnElem = event.currentTarget;
+        const todoIndex = Number(bttnElem.getAttribute('data-index'));
+
+        if(confirm('Are you sure you want to delete this Todo?')){
+            const projectIndex = logicModule.getSelectedProjectIndex();
+            projectManager.deleteTodo(projectIndex, todoIndex);
+
+            _updateProjectView();
+        }
     }
 
     const _getDialogFormTodo = function() {
