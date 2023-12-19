@@ -79,5 +79,4 @@ const makeSidebarOptions = function() {
     return container;
 }
 
-
 export { makeSidebar };

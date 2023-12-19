@@ -318,10 +318,10 @@ const displayController = (function() {
     const _deleteTodoHandler = function(event) {
         const bttnElem = event.currentTarget;
         const todoIndex = Number(bttnElem.getAttribute('data-index'));
+        logicModule.setSelectedTodoIndex(todoIndex);
 
         if(confirm('Are you sure you want to delete this Todo?')){
-            const projectIndex = logicModule.getSelectedProjectIndex();
-            projectManager.deleteTodo(projectIndex, todoIndex);
+            logicModule.deleteSelectedTodo();
 
             _updateProjectView();
         }

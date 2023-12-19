@@ -7,58 +7,6 @@ const makeTodoView = function(projectTitles) {
     return dialog;
 }
 
-const updateTodoInfo = function(todoInfo) {
-    _updateTitleText(todoInfo.getTodoTitle());
-    _updateDescText(todoInfo.getTodoDesc());
-    _updateDueDateText(todoInfo.getTodoDueDate());
-    _updatePriorityText(todoInfo.getTodoPriority());
-    _updateProjectDestText(todoInfo.getTodoLocation());
-    _updateNotesText(todoInfo.getTodoNotes());
-}
-
-//need input validation in these functions or at least in dueDate
-
-const getTitleValue = function() {
-    const titleElem = document.querySelector('#todo-title');
-    return titleElem.value;
-}
-
-const getDescValue = function() {
-    const descElem = document.querySelector('#todo-description');
-    return descElem.value;
-}
-
-const getDueDateValue = function() {
-    const dueDateElem = document.querySelector('#todo-due-date');
-    if(dueDateElem.value !== ''){
-        const dates = dueDateElem.value.split('-');
-        if(dates[1].charAt(0) == '0')
-            dates[1] = dates[1].slice(1);
-        if(dates[2].charAt(0) == '0')
-            dates[2] = dates[2].slice(1);
-        
-        //months are numbered (0-11) so I need to offset the input by 1
-        dates[1] = Number(dates[1]) - 1;
-        return new Date(dates[0], dates[1], dates[2]);
-    }
-    return dueDateElem.value;
-}
-
-const getPriorityValue = function() {
-    const priorityElem = document.querySelector('#todo-priority');
-    return priorityElem.value;
-}
-
-const getProjectDestValue = function() {
-    const projectDestElem = document.querySelector('#project-dest');
-    return projectDestElem.value;
-}
-
-const getNotesValue = function() {
-    const notesElem = document.querySelector('#todo-notes');
-    return notesElem.value;
-}
-
 const _makeForm = function(projectTitles) {
     const form = document.createElement('form');
     form.setAttribute('method', 'dialog');
@@ -107,14 +55,14 @@ const _makeDesc = function() {
     label.htmlFor = 'todo-description';
     label.textContent = 'Description: ';
 
-    const input = document.createElement('input');
-    input.classList.add('form-control-text-input');
-    input.type = 'text';
-    input.required = true;
-    input.id = 'todo-description';
+    const textArea = document.createElement('textarea');
+    textArea.classList.add('form-control-text-area');
+    textArea.setAttribute('rows', '4');
+    textArea.required = true;
+    textArea.id = 'todo-description';
 
     container.appendChild(label);
-    container.appendChild(input);
+    container.appendChild(textArea);
 
     return container;
 }
@@ -218,14 +166,14 @@ const _makeNotes = function() {
     label.htmlFor = 'todo-notes';
     label.textContent = 'Notes: ';
 
-    const input = document.createElement('input');
-    input.classList.add('form-control-text-input');
-    input.type = 'text';
-    input.required = true;
-    input.id = 'todo-notes';
+    const textArea = document.createElement('textarea');
+    textArea.classList.add('form-control-text-area');
+    textArea.setAttribute('rows', '4');
+    textArea.required = true;
+    textArea.id = 'todo-notes';
 
     container.appendChild(label);
-    container.appendChild(input);
+    container.appendChild(textArea);
 
     return container;
 }
@@ -260,10 +208,9 @@ const _updateTitleText = function(todoTitle) {
 
 const _updateDescText = function(todoDesc) {
     const desc = document.querySelector('#todo-description');
-    desc.setAttribute('value', todoDesc);
+    desc.textContent = todoDesc;
 }
 
-//this function cant display the date given for some reason
 const _updateDueDateText = function(todoDate) {
     const dueDate = document.querySelector('#todo-due-date');
 
@@ -298,7 +245,57 @@ const _updateProjectDestText = function(projectLocation) {
 
 const _updateNotesText = function(todoNotes) {
     const notes = document.querySelector('#todo-notes');
-    notes.setAttribute('value', todoNotes);
+    notes.textContent = todoNotes;
+}
+
+const updateTodoInfo = function(todoInfo) {
+    _updateTitleText(todoInfo.getTodoTitle());
+    _updateDescText(todoInfo.getTodoDesc());
+    _updateDueDateText(todoInfo.getTodoDueDate());
+    _updatePriorityText(todoInfo.getTodoPriority());
+    _updateProjectDestText(todoInfo.getTodoLocation());
+    _updateNotesText(todoInfo.getTodoNotes());
+}
+
+const getTitleValue = function() {
+    const titleElem = document.querySelector('#todo-title');
+    return titleElem.value;
+}
+
+const getDescValue = function() {
+    const descElem = document.querySelector('#todo-description');
+    return descElem.value;
+}
+
+const getDueDateValue = function() {
+    const dueDateElem = document.querySelector('#todo-due-date');
+    if(dueDateElem.value !== ''){
+        const dates = dueDateElem.value.split('-');
+        if(dates[1].charAt(0) == '0')
+            dates[1] = dates[1].slice(1);
+        if(dates[2].charAt(0) == '0')
+            dates[2] = dates[2].slice(1);
+        
+        //months are numbered (0-11) so I need to offset the input by 1
+        dates[1] = Number(dates[1]) - 1;
+        return new Date(dates[0], dates[1], dates[2]);
+    }
+    return dueDateElem.value;
+}
+
+const getPriorityValue = function() {
+    const priorityElem = document.querySelector('#todo-priority');
+    return priorityElem.value;
+}
+
+const getProjectDestValue = function() {
+    const projectDestElem = document.querySelector('#project-dest');
+    return projectDestElem.value;
+}
+
+const getNotesValue = function() {
+    const notesElem = document.querySelector('#todo-notes');
+    return notesElem.value;
 }
 
 export { makeTodoView, updateTodoInfo, getTitleValue, getDescValue, getDueDateValue,

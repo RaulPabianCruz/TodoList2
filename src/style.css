@@ -30,6 +30,14 @@ time, mark, audio, video {
     --neutralWhite: #fafafa;
 }
 
+input,
+textarea,
+select {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
 @font-face {
     font-family: 'PlayPen';
     src: url(fonts/PlaypenSans-Bold.ttf) format(truetype),
@@ -221,4 +229,84 @@ body {
     border: 1px solid gray;
     border-radius: 5px;
     align-self: center;
+}
+
+/* -----------Todo View Styling Yay!------------- */
+
+.todo-dialog{
+    width: 350px;
+    height: 600px;
+}
+
+.todo-form {
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 2fr 1fr 1fr 2fr 1fr;
+}
+
+.todo-title-container {
+    display: flex;
+    flex-direction: column;
+    grid-column: 1/3;
+    grid-row: 1;
+}
+
+.todo-desc-container {
+    display: flex;
+    flex-direction: column;
+    grid-column: 1/3;
+    grid-row: 2;
+}
+
+.todo-due-date-container {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+.todo-priority-container {
+    grid-column: 1;
+    grid-row: 4;
+}
+
+.todo-dest-container {
+    grid-column: 2;
+    grid-row: 3/5;
+}
+
+.todo-notes-container {
+    display: flex;
+    flex-direction: column;
+    grid-column: 1/3;
+    grid-row: 5;
+}
+
+.todo-bttns-container {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    grid-column: 1/3;
+    grid-row: 6;
+}
+
+.form-control-select,
+.form-control-date-input,
+.form-control-text-input {
+    height: 1.5rem;
+}
+
+.form-control-text-input,
+.form-control-text-area {
+    font-size: 1rem;
+}
+
+.form-control-text-area {
+    resize: vertical;
+}
+
+.form-control-bttn {
+    margin-left: 3px;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
 }
