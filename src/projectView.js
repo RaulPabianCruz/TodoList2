@@ -1,3 +1,5 @@
+import { format } from 'date-fns';
+
 const makeProjectView = function(projectInfo) {
     const container = document.createElement('div');
     container.classList.add('project-view-container');
@@ -60,7 +62,7 @@ const _makeTodoItemInfo = function(title, priority, dueDate, index) {
     todoTitle.classList.add('todo-item-title');
 
     const todoDueDate = document.createElement('p');
-    todoDueDate.textContent = 'Due Date: ' + dueDate.toString();
+    todoDueDate.textContent = 'Due Date: ' + format(dueDate, 'MM/dd/yyyy');
     todoDueDate.classList.add('todo-item-due-date');
 
     container.appendChild(todoTitle);

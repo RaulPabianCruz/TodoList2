@@ -1,3 +1,5 @@
+import { format, parse } from 'date-fns';
+
 const makeTodoView = function(projectTitles) {
     const dialog = document.createElement('dialog');
     dialog.classList.add('todo-dialog');
@@ -213,15 +215,8 @@ const _updateDescText = function(todoDesc) {
 
 const _updateDueDateText = function(todoDate) {
     const dueDate = document.querySelector('#todo-due-date');
+    const dateString = format(todoDate, 'yyyy-MM-dd')
 
-    let month = todoDate.getMonth().toString();
-    let date = todoDate.getDate().toString();
-    if(month.length < 2)
-        month = '0' + month;
-    if(date.length < 2)
-        date = '0' + date;
-
-    const dateString = `${todoDate.getFullYear()}-${month}-${date}`;
     dueDate.setAttribute('value', dateString);
 }
 
@@ -270,17 +265,11 @@ const getDescValue = function() {
 const getDueDateValue = function() {
     const dueDateElem = document.querySelector('#todo-due-date');
     if(dueDateElem.value !== ''){
-        const dates = dueDateElem.value.split('-');
-        if(dates[1].charAt(0) == '0')
-            dates[1] = dates[1].slice(1);
-        if(dates[2].charAt(0) == '0')
-            dates[2] = dates[2].slice(1);
-        
-        //months are numbered (0-11) so I need to offset the input by 1
-        dates[1] = Number(dates[1]) - 1;
-        return new Date(dates[0], dates[1], dates[2]);
+        const dateString = dueDateElem.value;
+        return parse(dateString, 'yyyy-MM-dd', new Date());
     }
-    return dueDateElem.value;
+    else
+        return dueDateElem.value;
 }
 
 const getPriorityValue = function() {
