@@ -6,11 +6,12 @@ import { makeHeader } from './header.js';
 import { makeSidebar } from './sidebar.js';
 import { makeProjectView } from './projectView.js';
 import * as todoView from './todoView.js';
-import { todoInfoFactory } from "./todoInfoFactory.js";
+import { todoInfoFactory } from './todoInfoFactory.js';
+import { storageAvailable, getStorage } from './webStorage.js';
 
 const projectManager = (function (){
     const defaultProject = projectFactory('Default');
-    const projectsArray = [defaultProject];
+    let projectsArray = [defaultProject];
 
     const _isValidIndex = function(index) {
         if(index >= 0 && index < projectsArray.length)
@@ -24,6 +25,14 @@ const projectManager = (function (){
         else
             return false;
     }
+
+    const setProjectsArray = function(newArray) {
+        projectsArray = newArray;
+    }
+    const getProjectsArray = function() {
+        return projectsArray.map((project) => project);
+    }
+
 
     const addProject = function(title) {
         projectsArray.push(projectFactory(title));
@@ -42,8 +51,9 @@ const projectManager = (function (){
         else
             return null;
     }
-    const getProjectsArray = function() {
-        return projectsArray.map((project) => project);
+    const getProjectTitles = function() {
+        const projArray = projectManager.getProjectsArray();
+        return projArray.map((project)=>project.getTitle());
     }
 
     const addTodo = function(projectIndex, todo) {
@@ -67,10 +77,12 @@ const projectManager = (function (){
             null;
     }
 
-    return { addProject, deleteProject, editProject, getProjectAt, getProjectsArray,
-            addTodo, deleteTodo, getTodoAt, getProjectTodoArray };
+    return { setProjectsArray, getProjectsArray, addProject, deleteProject, editProject,
+         getProjectAt, getProjectTitles, addTodo, deleteTodo, getTodoAt, getProjectTodoArray };
 })();
 
+
+//keeps track of choices and selections made
 const logicModule = (function() {
     let selectedProjectIndex = 0;
     let selectedTodoIndex = -1;
@@ -88,7 +100,6 @@ const logicModule = (function() {
     const getSelectedProjectIndex = function() {
         return selectedProjectIndex;
     }
-    //may have to do some input validation later on these two functions
     const setSelectedTodoIndex = function(todoIndex) {
         selectedTodoIndex = todoIndex;
     }
@@ -106,30 +117,16 @@ const logicModule = (function() {
     }
     const isAddingTodo = function() {
         return addingTodo;
-    }
+    }  
     
-    //helper functions temporarily placed here
-    const getProjectTitles = function() {
-        const projArray = projectManager.getProjectsArray();
-        return projArray.map((project)=>project.getTitle());
-    }
     const getSelectedProjInfo = function() {
         const project = _getSelectedProject();
         return projectInfoFactory(project);
     }
-    const getProjInfoAt = function(projectIndex) {
-        const project = projectManager.getProjectAt(projectIndex);
-        if(project != null)
-            return projectInfoFactory(project);
-        else{
-            const emptyProject = projectFactory('');
-            return projectInfoFactory(emptyProject);
-        }
-    }
-    const getTodoInfoAt = function(todoIndex) {
-        const todo = projectManager.getTodoAt(selectedProjectIndex, todoIndex);
+    const getSelectedTodoInfo = function() {
         const project = projectManager.getProjectAt(selectedProjectIndex);
         const projectTitle = project.getTitle();
+        const todo = projectManager.getTodoAt(selectedProjectIndex, selectedTodoIndex);
 
         return todoInfoFactory(todo, projectTitle);
     }
@@ -139,9 +136,8 @@ const logicModule = (function() {
 
     return { setSelectedProjectIndex, getSelectedProjectIndex, 
         setSelectedTodoIndex, getSelectedTodoIndex, setEditingTodo,
-        setAddingTodo, isEditingTodo, isAddingTodo, getProjectTitles, 
-        getSelectedProjInfo , getProjInfoAt, getTodoInfoAt,
-        deleteSelectedTodo };
+        setAddingTodo, isEditingTodo, isAddingTodo, getSelectedProjInfo,
+        getSelectedTodoInfo, deleteSelectedTodo };
 })();
 
 
@@ -151,143 +147,176 @@ const displayController = (function() {
 
     const initiatePage = function() {
         container.appendChild(makeHeader());
-        container.appendChild(makeSidebar(logicModule.getProjectTitles()));
-        container.appendChild(makeProjectView(logicModule.getProjInfoAt(0)));
+        container.appendChild(makeSidebar(projectManager.getProjectTitles()));
+        container.appendChild(makeProjectView(logicModule.getSelectedProjInfo()));
 
         _addSidebarListeners();
         _addProjectViewListeners();
     }
 
     //UPDATES PAGE SECTIONS TO REPRESENT CHANGES MADE-----------------------------
-    const _updateSidebar = function() {
+    const updateSidebar = function() {
         container.removeChild(container.childNodes[1]);
-        const newSidebar = makeSidebar(logicModule.getProjectTitles());
+        const newSidebar = makeSidebar(projectManager.getProjectTitles());
         container.insertBefore(newSidebar, container.childNodes[1]);
         _addSidebarListeners();
     }
 
-    const _updateProjectView = function() {
+    const updateProjectView = function() {
         container.removeChild(container.childNodes[2]);
         const newProjInfo = logicModule.getSelectedProjInfo();
         container.insertBefore(makeProjectView(newProjInfo), container.childNodes[2]);
         _addProjectViewListeners();
     }
 
-    const _updateTodoView = function() {
-        dialog = todoView.makeTodoView(logicModule.getProjectTitles());
+    const updateTodoView = function() {
+        dialog = todoView.makeTodoView(projectManager.getProjectTitles());
         container.appendChild(dialog);
         _addTodoViewListeners();
+    }
+
+    const showTodoForm = function() {
+        dialog.showModal();
+    }
+
+    const hideTodoForm = function() {
+        dialog.close();
+    }
+
+    const removeTodoForm = function() {
+        container.removeChild(dialog);
     }
 
     //ADDS LISTENERS TO ALL RELEVENAT ELEMENTS IN EACH SECTION---------------------
     const _addSidebarListeners = function() {
         const displayedProjects = document.querySelectorAll('.sidebar-list-item');
-        displayedProjects.forEach((project)=>project.addEventListener('click', _selectProjectHandler));
+        displayedProjects.forEach((project)=>project.addEventListener('click', handlerModule.selectProjectHandler));
 
         const editProjectBttn = document.querySelectorAll('.sidebar-list-edit');
-        editProjectBttn.forEach((bttn)=>bttn.addEventListener('click', _editProjectHandler));
+        editProjectBttn.forEach((bttn)=>bttn.addEventListener('click', handlerModule.editProjectHandler));
         
         const deleteProjectBttns = document.querySelectorAll('.sidebar-list-delete');
-        deleteProjectBttns.forEach((bttn) => bttn.addEventListener('click', _deleteProjectHandler));
+        deleteProjectBttns.forEach((bttn) => bttn.addEventListener('click', handlerModule.deleteProjectHandler));
         
         const newProjectBttn = document.querySelector('.new-project-bttn');
-        newProjectBttn.addEventListener('click', _newProjectHandler);
+        newProjectBttn.addEventListener('click', handlerModule.newProjectHandler);
 
         const newTodoBttn = document.querySelector('.new-todo-bttn');
-        newTodoBttn.addEventListener('click', _addTodoHandler);
+        newTodoBttn.addEventListener('click', handlerModule.addTodoHandler);
     }
 
     const _addProjectViewListeners = function() {
         const todoArray = document.querySelectorAll('.todo-info-container');
-        todoArray.forEach((todo)=>todo.addEventListener('click', _selectTodoHandler));
+        todoArray.forEach((todo)=>todo.addEventListener('click', handlerModule.selectTodoHandler));
 
         const deleteBttns = document.querySelectorAll('.todo-item-delete');
-        deleteBttns.forEach((bttn)=>bttn.addEventListener('click', _deleteTodoHandler));
+        deleteBttns.forEach((bttn)=>bttn.addEventListener('click', handlerModule.deleteTodoHandler));
 
         const addTodoBttn = document.querySelector('.add-todo-bttn');
-        addTodoBttn.addEventListener('click', _addTodoHandler);
+        addTodoBttn.addEventListener('click', handlerModule.addTodoHandler);
     }
 
     const _addTodoViewListeners = function() {
         const submitBttn = document.querySelector('.form-control-submit-bttn');
-        submitBttn.addEventListener('click', _submitTodoHandler);
+        submitBttn.addEventListener('click', handlerModule.submitTodoHandler);
 
         const cancelBttn = document.querySelector('.form-control-cancel-bttn');
-        cancelBttn.addEventListener('click', _cancelTodoHandler);
+        cancelBttn.addEventListener('click', handlerModule.cancelTodoHandler);
     }
 
+    return { initiatePage, updateSidebar, updateProjectView, updateTodoView,
+    showTodoForm, hideTodoForm, removeTodoForm };
+})();
 
-    //EVENT HANDLERS GO HERE -------------------------------------------------------
-    const _selectProjectHandler = function(event) {
+//event handlers all here --------------------------------------------------
+const handlerModule = (function() {
+
+    const selectProjectHandler = function(event) {
         const projectElement = event.currentTarget;
         const projectIndex = Number(projectElement.getAttribute('data-index'));
         logicModule.setSelectedProjectIndex(projectIndex);
 
-        _updateProjectView();
+        displayController.updateProjectView();
     }
 
-    const _editProjectHandler = function(event) {
+    const editProjectHandler = function(event) {
         const bttnContainer = event.currentTarget.parentElement;
         const index = Number(bttnContainer.getAttribute('data-index'));
 
         const newTitle = prompt('Enter the project\'s new name: ');
         if(newTitle != null){
             let project = projectManager.getProjectAt(index);
+            let oldTitle = project.getTitle();
             project.setTitle(newTitle);
-            _updateSidebar();
+            displayController.updateSidebar();
 
             if(index == logicModule.getSelectedProjectIndex())
-                _updateProjectView();
+                displayController.updateProjectView();
+
+            storageModule.storeProjectTitles();
+            storageModule.unstoreProject(oldTitle);
+            storageModule.storeProject(index)
         }
     }
 
-    const _deleteProjectHandler = function(event) {
+    const deleteProjectHandler = function(event) {
         const bttnContainer = event.currentTarget.parentElement;
         const index = Number(bttnContainer.getAttribute('data-index'));
 
         if(confirm('Are you sure you want to delete this project?')){
+            let oldTitle = projectManager.getProjectAt(index).getTitle();
+
             projectManager.deleteProject(index);
-            _updateSidebar();
+            displayController.updateSidebar();
 
             const currentIndex = logicModule.getSelectedProjectIndex();
             if(index <= currentIndex){
                 logicModule.setSelectedProjectIndex(currentIndex - 1);
-                _updateProjectView();
+                displayController.updateProjectView();
             }
+
+            storageModule.storeProjectTitles();
+            storageModule.unstoreProject(oldTitle);
         }
     }
 
-    const _newProjectHandler = function(event) {
+    const newProjectHandler = function(event) {
         const newTitle = prompt('Enter the new project name: ');
         if(newTitle != null){
             projectManager.addProject(newTitle);
-            _updateSidebar();
+            displayController.updateSidebar();
+
+            let lastIndex = projectManager.getProjectTitles().length - 1;
+            storageModule.storeProjectTitles();
+            storageModule.storeProject(lastIndex);
         }
+
+
     }
 
-    const _addTodoHandler = function(event) {
-        _updateTodoView();
+    const addTodoHandler = function(event) {
+        displayController.updateTodoView();
         
         logicModule.setAddingTodo(true);
 
-        dialog.showModal();
+        displayController.showTodoForm();
     }
 
-    const _selectTodoHandler = function(event) {
-        _updateTodoView()
+    const selectTodoHandler = function(event) {
+        displayController.updateTodoView()
 
         const todoElement = event.currentTarget;
         const todoIndex = Number(todoElement.getAttribute('data-index'));
-        const todoInfo = logicModule.getTodoInfoAt(todoIndex);
-
         logicModule.setSelectedTodoIndex(todoIndex);
-        logicModule.setEditingTodo(true);
-        todoView.updateTodoInfo(todoInfo);
 
-        dialog.showModal();        
+        logicModule.setEditingTodo(true);
+
+        todoView.updateTodoInfo(logicModule.getSelectedTodoInfo());
+
+        displayController.showTodoForm();       
     }
 
-    const _submitTodoHandler = function() {
+    const submitTodoHandler = function() {
         if(_isFormInfoValid()){
             const newTodo = _getDialogFormTodo();
             const newProjectIndex = todoView.getProjectDestValue();
@@ -303,19 +332,23 @@ const displayController = (function() {
                 projectManager.addTodo(newProjectIndex, newTodo);
                 
                 logicModule.setEditingTodo(false);
+
+                storageModule.storeProject(logicModule.getSelectedProjectIndex());
             }
 
-            _updateProjectView();
-            _cancelTodoHandler();
+            storageModule.storeProject(newProjectIndex);
+
+            displayController.updateProjectView();
+            cancelTodoHandler();
         }
     }
 
-    const _cancelTodoHandler = function() {
-        dialog.close();
-        container.removeChild(dialog);
+    const cancelTodoHandler = function() {
+        displayController.hideTodoForm();
+        displayController.removeTodoForm();
     }
 
-    const _deleteTodoHandler = function(event) {
+    const deleteTodoHandler = function(event) {
         const bttnElem = event.currentTarget;
         const todoIndex = Number(bttnElem.getAttribute('data-index'));
         logicModule.setSelectedTodoIndex(todoIndex);
@@ -323,7 +356,9 @@ const displayController = (function() {
         if(confirm('Are you sure you want to delete this Todo?')){
             logicModule.deleteSelectedTodo();
 
-            _updateProjectView();
+            displayController.updateProjectView();
+
+            storageModule.storeProject(logicModule.getSelectedProjectIndex());
         }
     }
 
@@ -345,11 +380,58 @@ const displayController = (function() {
             return true;
     }
 
-    return { initiatePage };
+    return { selectProjectHandler, editProjectHandler, deleteProjectHandler,
+        newProjectHandler, addTodoHandler, selectTodoHandler, 
+        submitTodoHandler, cancelTodoHandler, deleteTodoHandler };
 })();
 
-const dummyTodo = todoFactory('dummyTodo', 'this is dummy todo', new Date(2000, 2, 1), 'high-priority', 'no notes');
-projectManager.addTodo(0,dummyTodo);
 
+const storageModule = (function() {
+    let isStorageAvailable = false;    
+
+    const initiateStorage = function() {
+        //checks that local storage functionality is available
+        if(storageAvailable('localStorage')){
+            isStorageAvailable = true;
+
+            //checks whether local storage already contains info
+            if(localStorage.getItem('projectTitles')){
+                let projectsArray = getStorage();
+                projectManager.setProjectsArray(projectsArray);
+            }
+            else {
+                let projectTitles = projectManager.getProjectTitles();
+                let defaultProject = projectManager.getProjectAt(0);
+                localStorage.setItem('projectTitles', JSON.stringify(projectTitles));
+                localStorage.setItem('Default', JSON.stringify(defaultProject));
+            }
+        }
+    }
+
+    const storeProjectTitles = function() {
+        if(isStorageAvailable){
+            let projectTitles = projectManager.getProjectTitles();
+            localStorage.setItem('projectTitles', JSON.stringify(projectTitles));
+        }
+    }
+
+    const storeProject = function(projectIndex) {
+        if(isStorageAvailable){
+            let project = projectManager.getProjectAt(projectIndex);
+            let projectTitle = project.getTitle();
+            localStorage.setItem(projectTitle, JSON.stringify(project));
+        }
+    }
+
+    const unstoreProject = function(projectTitle) {
+        if(isStorageAvailable){
+            localStorage.removeItem(projectTitle);
+        }
+    }
+
+    return { initiateStorage, storeProjectTitles, storeProject,
+            unstoreProject };
+})();
+
+storageModule.initiateStorage();
 displayController.initiatePage();
-

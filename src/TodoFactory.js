@@ -26,8 +26,12 @@ const todoFactory = function(title, desc, dueDate, priority, notes) {
         return sortPriority;
     }
 
+    const toJSON = function() {
+        return { title: title, desc: desc, dueDate: dueDate, priority: priority, notes: notes };
+    }
+
     return { getTitle, getDesc, getDueDate, getPriority, getNotes, setTitle,
-        setDesc, setDueDate, setPriority, setNotes, getSortPriority };
+        setDesc, setDueDate, setPriority, setNotes, getSortPriority, toJSON };
 }
 
 export { todoFactory };

@@ -1,5 +1,4 @@
-const projectFactory = function(title) {
-    const todoArray = [];
+const projectFactory = function(title, todoArray = []) {
 
     const _sortFunction = function(firstTodo, secondTodo) {
         const firstPriority = firstTodo.getSortPriority();
@@ -32,8 +31,12 @@ const projectFactory = function(title) {
     const getTodoArray = function() {
         return todoArray.map((todo) => todo);
     }
+    
+    const toJSON = function(){
+        return { title: title, todoArray: todoArray};
+    }
 
-    return { getTitle, setTitle, addTodo, deleteTodo, getTodoAt, getTodoArray };
+    return { getTitle, setTitle, addTodo, deleteTodo, getTodoAt, getTodoArray, toJSON };
 }
 
 export { projectFactory };
